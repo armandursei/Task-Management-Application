@@ -1,8 +1,8 @@
 /**
- * Clasa pentru configurarea aplicației în contextul unui server servlet (Tomcat).
- * Este utilizată pentru a face aplicația deployabilă pe un server web.
+ * Configures the application when it is deployed as a WAR to an external
+ * servlet container (e.g. Tomcat).
  * @author Ursei George-Armand
- * @version 10 Decembrie 2024
+ * @version 10 December 2024
  */
 
 

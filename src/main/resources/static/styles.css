@@ -1,8 +1,8 @@
-<!--/**-->
-<!--* Stiluri CSS -->
-<!--* @author Ursei George-Armand-->
-<!--* @version 5 Ianuarie 2025-->
-<!--*/-->
+/**
+ * Stylesheet for the Task Manager UI.
+ * @author Ursei George-Armand
+ * @version 5 January 2025
+ */
 
 /* General styles */
 body {
@@ -155,7 +155,7 @@ form input[type="text"]:focus {
     animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Stilizare butoane */
+/* Button styling */
 button, .btn {
     display: inline-block;
     padding: 10px 20px;
@@ -203,20 +203,12 @@ button:active, .btn:active {
 }
 
 .form2 {
-    /*margin: 0;*/
     padding: 0;
-    /*display: inline;*/
-    /*border: none;*/
-    /*background: none;*/
     background-color: transparent;
 }
 
 .btn2{
     background: green !important;
-
-}
-
-.sear{
 
 }
 

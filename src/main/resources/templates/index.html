@@ -1,18 +1,17 @@
-<!--/**-->
-<!--* HTML interfata -->
-<!--* @author Ursei George-Armand-->
-<!--* @version 5 Ianuarie 2025-->
-<!--*/-->
-
-
 <!DOCTYPE html>
+<!--
+  Main page of the application (Thymeleaf template): activity list,
+  to-do schedule with progress bar, and the add/edit/confirmation overlays.
+  @author Ursei George-Armand
+  @version 5 January 2025
+-->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Lista Activităților</title>
+    <title>Task Manager</title>
     <link rel="stylesheet" href="/styles.css">
 
     <style>
-        /* Stil pentru overlay */
+        /* Overlay */
         .overlay {
             position: fixed;
             top: 0;
@@ -48,7 +47,7 @@
             padding: 10px 20px;
             font-size: 14px;
             color: white;
-            background-color: #f44336; /* roșu */
+            background-color: #f44336; /* red */
             border: none;
             border-radius: 5px;
             text-decoration: none;
@@ -56,20 +55,19 @@
         }
 
         .btn-exit:hover {
-            background-color: #d32f2f; /* roșu închis */
+            background-color: #d32f2f; /* dark red */
         }
     </style>
 </head>
 <body>
 
-<!--<div style="text-align: center; margin: 20px;">-->
 <div style="text-align: center; margin: 20px; display: flex; justify-content: center; align-items: center; gap: 15px;">
     <form th:action="@{/toggleList}" method="post" style=" width: 280px; height: 30px;">
         <button type="submit" class="btn" style="height: 35px; padding: 10px 15px; margin-top:0;" th:text="${listButtonText}"></button>
     </form>
     <form th:action="@{/search} " method="get" style=" width: 280px; height: 30px; display: flex; align-items: center; gap: 5px;">
-        <input  type="text" name="query" placeholder="Caută activități..." style="width: 160px; height: 10px; padding-bottom: 15px; margin-bottom: 0px;"/>
-        <button type="submit" class="btn" style="height: 35px; padding: 10px 15px;">Caută</button>
+        <input  type="text" name="query" placeholder="Search activities..." style="width: 160px; height: 10px; padding-bottom: 15px; margin-bottom: 0px;"/>
+        <button type="submit" class="btn" style="height: 35px; padding: 10px 15px;">Search</button>
     </form>
 </div>
 
@@ -81,7 +79,7 @@
 
 
     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-        <h1 style="margin-left: 50px; font-size: 44px;">Lista Activităților</h1>
+        <h1 style="margin-left: 50px; font-size: 44px;">Activities</h1>
         <a th:href="@{/add}" class="btn" style="
         text-decoration: none;
         padding: 10px 20px;
@@ -93,7 +91,7 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         transition: background 0.3s ease;
         margin-right: 50px;">
-            Adaugă Activitate
+            Add Activity
         </a>
     </div>
 
@@ -101,40 +99,37 @@
     <table border="1">
     <thead>
     <tr>
-<!--        <th>ID</th>-->
-        <th>Nume</th>
-        <th>Descriere</th>
-        <th>Ora Început</th>
-        <th>Durata</th>
-        <th>Acțiuni</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Start Time</th>
+        <th>Duration</th>
+        <th>Actions</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="activitate : ${activitati}">
-<!--        <td th:text="${activitate.idActivitati}"></td>-->
-        <td th:text="${activitate.nume}"></td>
-        <td th:text="${activitate.descriere}"></td>
-        <td th:text="${activitate.oraInceput}"></td>
-        <td th:text="${activitate.durata}"></td>
+    <tr th:each="activity : ${activities}">
+        <td th:text="${activity.name}"></td>
+        <td th:text="${activity.description}"></td>
+        <td th:text="${activity.startTime}"></td>
+        <td th:text="${activity.duration}"></td>
 
 
         <td>
-<!--            <a th:href="@{/edit?id={id}(id=${activitate.idActivitati})}" class="btn">Editare</a>-->
-            <a th:href="@{/edit(id=${activitate.idActivitati})}" class="btn">Editare</a>
+            <a th:href="@{/edit(id=${activity.id})}" class="btn">Edit</a>
 
 
             <form th:action="@{/showDeleteConfirmation}" method="post" style="display: inline; padding: 0; width: 5px; background-color: transparent;">
-                <input type="hidden" name="id" th:value="${activitate.idActivitati}" />
-                <button type="submit" class="btn btn-exit">Ștergere</button>
+                <input type="hidden" name="id" th:value="${activity.id}" />
+                <button type="submit" class="btn btn-exit">Delete</button>
             </form>
 
 
 
             <form method="get" th:action="@{/showToggleConfirmation2}" style="display: inline; padding: 0; background-color: transparent;">
-                <input type="hidden" name="id" th:value="${activitate.idActivitati}" />
-                <input type="hidden" name="action" th:value="${textDeFacut[activitate.idActivitati.longValue()]}" />
+                <input type="hidden" name="id" th:value="${activity.id}" />
+                <input type="hidden" name="action" th:value="${todoButtonText[activity.id.longValue()]}" />
                 <button type="submit" class="btn btn2">
-                    <span th:text="${textDeFacut[activitate.idActivitati.longValue()]}">De făcut</span>
+                    <span th:text="${todoButtonText[activity.id.longValue()]}">Add to To-Do</span>
                 </button>
             </form>
 
@@ -147,12 +142,12 @@
 
 
 <div style="margin: 20px; text-align: center;">
-    <h3 style="font-family: Arial, sans-serif; font-weight: bold;">Progresul activităților</h3>
+    <h3 style="font-family: Arial, sans-serif; font-weight: bold;">Activity progress</h3>
     <div style="width: 100%; background-color: #f0f0f0; border-radius: 25px; height: 30px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
         <div class="progress-bar"
              th:style="'width: ' + ${progress} + '%'"
              style="height: 100%; background: linear-gradient(to right, #76c7c0, #34a8a2); text-align: center; line-height: 30px; color: white; font-weight: bold;">
-            [[${progress}]]% complet
+            [[${progress}]]% complete
         </div>
     </div>
 </div>
@@ -161,73 +156,73 @@
 
 <div style="text-align: center; margin: 5px; padding: 0;">
     <div style="display: flex; align-items: center; justify-content: space-between;">
-        <h2 style="margin-left: 75px;">Lucruri de făcut:</h2>
+        <h2 style="margin-left: 75px;">To-Do List:</h2>
         <form th:action="@{/confirmRemoveAll}" method="get" style="display: inline; padding: 0; width: 0; margin-right: 170px;">
-            <button type="submit" class="btn btn-danger"  style="">Elimină tot</button>
+            <button type="submit" class="btn btn-danger"  style="">Remove All</button>
         </form>
     </div>
 
     <table>
         <thead>
         <tr>
-            <th>Nume</th>
-            <th>Descriere</th>
-            <th>Ora Început</th>
-            <th>Durata</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Start Time</th>
+            <th>Duration</th>
             <th>Status</th>
-            <th>Progres</th>
-            <th>Acțiuni</th>
+            <th>Progress</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="item : ${lucruriDeFacut}">
-            <!-- Activitate -->
-            <td th:if="${item.type == 'activitate'}" th:text="${item.nume}">Nume</td>
-            <td th:if="${item.type == 'activitate'}" th:text="${item.descriere}">Descriere</td>
-            <td th:if="${item.type == 'activitate'}" th:text="${item.oraInceput}">Ora Început</td>
-            <td th:if="${item.type == 'activitate'}" th:text="${item.durata}">Durata</td>
-            <td th:if="${item.type == 'activitate'}">
+        <tr th:each="item : ${todoItems}">
+            <!-- Activity row -->
+            <td th:if="${item.type == 'activity'}" th:text="${item.name}">Name</td>
+            <td th:if="${item.type == 'activity'}" th:text="${item.description}">Description</td>
+            <td th:if="${item.type == 'activity'}" th:text="${item.startTime}">Start Time</td>
+            <td th:if="${item.type == 'activity'}" th:text="${item.duration}">Duration</td>
+            <td th:if="${item.type == 'activity'}">
                 <form th:action="@{/updateStatus}" method="post" style="display: inline; padding: 0; background-color: transparent;">
                     <input type="hidden" name="id" th:value="${item.id}" />
                     <select name="status" onchange="this.form.submit()">
-                        <option th:each="status : ${T(com.backend.enums.StatusActivitate).values()}"
+                        <option th:each="status : ${T(com.backend.enums.ActivityStatus).values()}"
                                 th:value="${status.name()}"
                                 th:selected="${status.name() == item.status.name()}"
-                                th:text="${status.getDatabaseValue()}">
+                                th:text="${status.getLabel()}">
                         </option>
                     </select>
                 </form>
             </td>
 
-            <td th:if="${item.type == 'activitate'}">
+            <td th:if="${item.type == 'activity'}">
 
-                <span th:text="${item.progres} + '%'">0%</span>
-                <form  th:action="@{/showUpdateProgres}"  method="post"  th:if="${item.status == T(com.backend.enums.StatusActivitate).in_progres}" style="display: inline; background-color: transparent;" class="form2">
+                <span th:text="${item.progress} + '%'">0%</span>
+                <form  th:action="@{/showUpdateProgress}"  method="post"  th:if="${item.status == T(com.backend.enums.ActivityStatus).IN_PROGRESS}" style="display: inline; background-color: transparent;" class="form2">
                     <input type="hidden" name="id" th:value="${item.id}" />
-                    <button type="submit"  class="btn">Schimba</button>
+                    <button type="submit"  class="btn">Change</button>
                 </form>
 
             </td>
 
 
 
-            <td th:if="${item.type == 'activitate'}">
+            <td th:if="${item.type == 'activity'}">
 
 
                 <form method="get" th:action="@{/showToggleConfirmation}" style="display: inline; background-color: transparent;" class="form2">
                     <input type="hidden" name="id" th:value="${item.id}" />
                     <button type="submit" class="btn btn2">
-                        <span th:text="'Elimină'">Elimină</span>
+                        <span th:text="'Remove'">Remove</span>
                     </button>
                 </form>
 
             </td>
-            <!-- Pauza -->
-            <td th:if="${item.type == 'pauza'}" colspan="2" style="text-align: center; font-style: italic;">
-                Pauza
+            <!-- Break row -->
+            <td th:if="${item.type == 'break'}" colspan="2" style="text-align: center; font-style: italic;">
+                Break
             </td>
-            <td th:if="${item.type == 'pauza'}" th:text="${item.oraInceput}">Ora Început</td>
-            <td th:if="${item.type == 'pauza'}" th:text="${item.durata}">Durata</td>
+            <td th:if="${item.type == 'break'}" th:text="${item.startTime}">Start Time</td>
+            <td th:if="${item.type == 'break'}" th:text="${item.duration}">Duration</td>
         </tr>
         </tbody>
 
@@ -239,7 +234,7 @@
 
 <div class="overlay" th:if="${showForm}">
     <div class="modal">
-        <h2 th:text="${formTitle}">Adaugă/Editare Activitate</h2>
+        <h2 th:text="${formTitle}">Add/Edit Activity</h2>
 
         <div th:if="${errors != null}">
             <ul>
@@ -248,12 +243,12 @@
         </div>
 
         <form th:action="${formAction}" method="post">
-            <input type="hidden" name="idActivitati" th:value="${activitate?.idActivitati}" />
-            <label>Nume: <input type="text" name="nume" th:value="${activitate?.nume}" placeholder="Ex: Cursa 13"/></label><br>
-            <label>Descriere: <input type="text" name="descriere" th:value="${activitate?.descriere}" placeholder="Ex: Se merge pe ruta x-y"/></label><br>
-            <label>Ora Început: <input type="text" name="oraInceput" th:value="${activitate?.oraInceput}" placeholder="Ex: 18:23"/></label><br>
-            <label>Durata: <input type="text" name="durata" th:value="${activitate?.durata}" placeholder="Ex: 80"/></label><br>
-            <button type="submit">Salvează</button>
+            <input type="hidden" name="id" th:value="${activity?.id}" />
+            <label>Name: <input type="text" name="name" th:value="${activity?.name}" placeholder="e.g. Run 13"/></label><br>
+            <label>Description: <input type="text" name="description" th:value="${activity?.description}" placeholder="e.g. Take the x-y route"/></label><br>
+            <label>Start Time: <input type="text" name="startTime" th:value="${activity?.startTime}" placeholder="e.g. 18:23"/></label><br>
+            <label>Duration (minutes): <input type="text" name="duration" th:value="${activity?.duration}" placeholder="e.g. 80"/></label><br>
+            <button type="submit">Save</button>
             <a href="/" class="btn-exit" style="margin-left: 10px;">Exit</a>
         </form>
 
@@ -263,45 +258,45 @@
 
 <div class="overlay5" th:if="${showDeleteConfirmation}">
     <div class="modal5">
-        <h2>Confirmare Ștergere</h2>
-        <p>Ești sigur că vrei să ștergi această activitate?</p>
+        <h2>Confirm Deletion</h2>
+        <p>Are you sure you want to delete this activity?</p>
 
         <form th:action="@{/delete}" method="post" style="display: inline; padding: 0;">
             <input type="hidden" name="id" th:value="${deleteId}" />
-            <button type="submit" class="btn btn-exit">Ștergere</button>
+            <button type="submit" class="btn btn-exit">Delete</button>
         </form>
 
-        <a href="/" class="btn5 btn-cancel">Nu</a>
+        <a href="/" class="btn5 btn-cancel">No</a>
     </div>
 </div>
 
 <div class="overlay-confirm" th:if="${showToggleConfirmation}">
     <div class="modal-confirm">
-        <h2>Confirmare Eliminare</h2>
-        <p>Ești sigur că vrei să elimini această activitate din lucrurile de făcut?</p>
-        <form th:action="@{/toggleDeFacut}" method="post" style="display: inline; padding: 0;">
+        <h2>Confirm Removal</h2>
+        <p>Are you sure you want to remove this activity from the to-do list?</p>
+        <form th:action="@{/toggleTodo}" method="post" style="display: inline; padding: 0;">
             <input type="hidden" name="id" th:value="${toggleId}" />
-            <button type="submit" class="btn5 btn-confirm">Da</button>
+            <button type="submit" class="btn5 btn-confirm">Yes</button>
         </form>
-        <a href="/" class="btn5 btn-cancel">Nu</a>
+        <a href="/" class="btn5 btn-cancel">No</a>
     </div>
 </div>
 
 <div class="overlay-confirm-toggle" th:if="${showToggleConfirmation2}">
     <div class="modal-confirm">
-        <h2 th:text="${toggleAction == 'De făcut' ? 'Confirmare Adăugare' : 'Confirmare Eliminare'}"></h2>
-        <p th:text="${toggleAction == 'De făcut' ? 'Ești sigur că vrei să adaugi această activitate în lista de făcut?' : 'Ești sigur că vrei să elimini această activitate din lista de făcut?'}"></p>
-        <form th:action="@{/toggleDeFacut}" method="post" style="display: inline; padding: 0;">
+        <h2 th:text="${toggleAction == 'Add to To-Do' ? 'Confirm Addition' : 'Confirm Removal'}"></h2>
+        <p th:text="${toggleAction == 'Add to To-Do' ? 'Are you sure you want to add this activity to the to-do list?' : 'Are you sure you want to remove this activity from the to-do list?'}"></p>
+        <form th:action="@{/toggleTodo}" method="post" style="display: inline; padding: 0;">
             <input type="hidden" name="id" th:value="${toggleId}" />
-            <button type="submit" class="btn5 btn-confirm">Da</button>
+            <button type="submit" class="btn5 btn-confirm">Yes</button>
         </form>
-        <a href="/" class="btn5 btn-cancel">Nu</a>
+        <a href="/" class="btn5 btn-cancel">No</a>
     </div>
 </div>
 
 <div class="overlay-error" th:if="${showErrorOverlay}">
     <div class="modal-error">
-        <h2>Eroare</h2>
+        <h2>Error</h2>
         <p th:text="${errorMessage}"></p>
         <a href="/" class="btn btn-cancel">OK</a>
     </div>
@@ -309,67 +304,63 @@
 
 <div class="overlay-success" th:if="${showSuccessOverlay}">
     <div class="modal-success">
-        <h2>Succes!</h2>
-        <p>Activitatea a fost salvată cu succes!</p>
-        <a href="/" class="btn btn-cancel">Ok</a>
+        <h2>Success!</h2>
+        <p>The activity was saved successfully!</p>
+        <a href="/" class="btn btn-cancel">OK</a>
     </div>
 </div>
 
 
 <div class="overlay-error" th:if="${errorMessage}">
     <div class="modal-error">
-        <h2>Eroare</h2>
+        <h2>Error</h2>
         <p th:text="${errorMessage}"></p>
-        <a href="/" class="btn btn-cancel">Ok</a>
+        <a href="/" class="btn btn-cancel">OK</a>
     </div>
 </div>
 
 <div class="overlay-error" th:if="${noResults}">
     <div class="modal-error">
-        <h2>Rezultate căutare</h2>
+        <h2>Search Results</h2>
         <p th:text="${errorMessage}"></p>
-        <a href="/" class="btn btn-cancel">Ok</a>
+        <a href="/" class="btn btn-cancel">OK</a>
     </div>
 </div>
 
-<!-- Overlay de confirmare -->
+<!-- "Remove all" confirmation overlay -->
 <div class="overlay-confirm" th:if="${showDeleteAllConfirmation}">
     <div class="modal-confirm">
-        <h2>Confirmare</h2>
-        <p>Ești sigur că vrei să elimini toate activitățile din lista "de făcut"?</p>
-        <form th:action="@{/removeAllDeFacut}" method="post" style="display: inline; padding: 0;">
-            <button type="submit" class="btn5 btn-confirm">Da</button>
+        <h2>Confirm</h2>
+        <p>Are you sure you want to remove all activities from the to-do list?</p>
+        <form th:action="@{/removeAllTodo}" method="post" style="display: inline; padding: 0;">
+            <button type="submit" class="btn5 btn-confirm">Yes</button>
         </form>
-        <a href="/" class="btn5 btn-cancel">Nu</a>
+        <a href="/" class="btn5 btn-cancel">No</a>
     </div>
 </div>
 
 
 <div class="overlay" th:if="${showProgressForm}">
     <div class="modal">
-        <h2>Actualizează Progresul</h2>
+        <h2>Update Progress</h2>
 
-        <!-- Afișare erori, dacă există -->
         <div th:if="${errors != null}">
             <ul>
                 <li th:each="error : ${errors}" th:text="${error}" style="color: red; font-weight: bold;"></li>
             </ul>
         </div>
 
-        <!-- Formular pentru actualizare progres -->
-        <form th:action="@{/updateProgres}" method="post">
-            <input type="hidden" name="id" th:value="${activitate?.idActivitati}" />
-            <label>Progres:
-                <input type="text" name="newProgress" placeholder="Introduceți un număr între 0 și 100" />
+        <form th:action="@{/updateProgress}" method="post">
+            <input type="hidden" name="id" th:value="${activity?.id}" />
+            <label>Progress:
+                <input type="text" name="newProgress" placeholder="Enter a number between 0 and 100" />
             </label><br>
-            <button type="submit">Salvează</button>
+            <button type="submit">Save</button>
         </form>
 
-        <!-- Mesaj de eroare suplimentar -->
         <p th:if="${errorMessage}" th:text="${errorMessage}" style="color: red;"></p>
 
-        <!-- Buton pentru anulare -->
-        <a href="/" class="btn btn-exit" style="margin-top: 10px;">Anulează</a>
+        <a href="/" class="btn btn-exit" style="margin-top: 10px;">Cancel</a>
     </div>
 </div>
 

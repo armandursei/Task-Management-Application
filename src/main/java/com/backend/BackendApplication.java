@@ -1,7 +1,7 @@
 /**
- * Clasa principală a aplicației care inițializează Spring Boot.
+ * Entry point of the application; bootstraps Spring Boot.
  * @author Ursei George-Armand
- * @version 10 Decembrie 2024
+ * @version 10 December 2024
  */
 
 
